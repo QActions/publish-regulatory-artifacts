@@ -1,0 +1,42 @@
+name: "Publish Regulatory artifacts"
+description: "Publishes the regulatory artifacts to the correct location for the SLT"
+
+runs:
+  using: composite
+  steps:
+    - name: Publish the test result file
+      shell: bash
+      run: |
+        # Check environment variables
+        if [ -z "$TEST_RESULTS_PATH" ]; then
+          TEST_RESULTS_PATH=test-reports/junit.xml
+        fi
+
+        if [ -z "$REGULATORY_S3_BUCKET" ]; then
+          echo "Missing the REGULATORY_S3_BUCKET environment variable!"
+          exit 1
+        fi
+
+        # Check if the test results file exist, skip if not
+        if [ ! -e "$TEST_RESULTS_PATH" ]; then
+          echo "Was not able to find $TEST_RESULTS_PATH"
+          echo "Skipping test result upload"
+          exit 0
+        fi
+
+        # Grab variables from the github context (https://docs.github.com/en/actions/learn-github-actions/contexts#github-context)
+        repository="${{github.repository}}"             # For example "Codertocat/Hello-World"
+        repository_owner="${{github.repository_owner}}" # For example "Codertocat"
+        sha="${{github.sha}}"                           # For example "209e4610f1f48a7f9954396d2b2c511899e88024"
+
+        # Determine the project name (from "Codertocat/Hello-World" to "Hello-World")
+        repository_characters_to_skip=$((${#repository_owner} + 1)) # Number of characters in repository_owner plus 1 (for the /)
+        project_name=${repository:$repository_characters_to_skip}
+
+        # Determine the target path
+        short_sha=${sha:0:8} # First 8 characters of the commit sha
+        test_result_target_path="s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/test-results.xml"
+        
+        # Publish
+        # The acl option is required since the current use case uses a cross account bucket 
+        aws s3 cp --acl bucket-owner-full-control $TEST_RESULTS_PATH $test_result_target_path
