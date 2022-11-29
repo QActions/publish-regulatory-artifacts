@@ -39,7 +39,7 @@ runs:
 
         date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         run_number=${{ github.run_number }}
-        name="Docker_Image"
+        name="Docker image"
         echo "{\"buildNumber\":\"${run_number}\",\"name\": \"${name}\",\"source\": \"Github Actions\",\"creationTimestamp\":\"${date}\"}" > buildInfo.json
         build_info_target_path="s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/builds/${name}-${run_number}-${date}/general-build-info.json"
 
