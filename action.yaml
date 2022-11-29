@@ -37,13 +37,15 @@ runs:
         short_sha=$(git rev-parse --short HEAD)
         test_result_target_path="s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/test-results.xml"
 
+        # Set the date variable to the iso date string of the current datetime
         date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
         run_number=${{ github.run_number }}
-        name="Docker image"
+        name="Docker Image"
         echo "{\"buildNumber\":\"${run_number}\",\"name\": \"${name}\",\"source\": \"Github Actions\",\"creationTimestamp\":\"${date}\"}" > buildInfo.json
         build_info_target_path="s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/builds/${name}-${run_number}-${date}/general-build-info.json"
 
         # Publish
         # The acl option is required since the current use case uses a cross account bucket
         aws s3 cp --acl bucket-owner-full-control $TEST_RESULTS_PATH $test_result_target_path
-        aws s3 cp --acl bucket-owner-full-control buildInfo.json $build_info_target_path
+        aws s3 cp --acl bucket-owner-full-control buildInfo.json "${build_info_target_path}"
