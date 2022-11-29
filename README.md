@@ -6,6 +6,7 @@ Publishes the regulatory artifacts to the correct location to be read by the Sof
   - The source file in Junit format, `test-reports/junit.xml` by default.
   - Target file in the root folder for the correct project/commit:
     `s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/test-results.xml`
+- Creates the build file for the test environment used in the lifecycle tool
 
 Expected environment variables:
 ```sh
