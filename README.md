@@ -6,6 +6,7 @@ Publishes the regulatory artifacts to the correct location to be read by the Sof
   - The source file in Junit format, `test-reports/junit.xml` by default.
   - Target file in the root folder for the correct project/commit:
     `s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/test-results.xml`
+- Creates the build file for the test environment used in the lifecycle tool
 
 Expected environment variables:
 ```sh
@@ -30,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Publish regulatory artifacts
-        uses: QActions/publish-regulatory-artifacts@1.0.0
+        uses: QActions/publish-regulatory-artifacts@1.1.0
         env:
           REGULATORY_S3_BUCKET: regulatory.extrahorizon.com
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
