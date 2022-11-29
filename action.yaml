@@ -34,9 +34,9 @@ runs:
         project_name=${repository:$repository_characters_to_skip}
 
         # Determine the target path
-        short_sha=${sha:0:8} # First 8 characters of the commit sha
+        short_sha=$(git rev-parse --short HEAD)
         test_result_target_path="s3://${REGULATORY_S3_BUCKET}/projects/${project_name}/commits/${short_sha}/test-results.xml"
-        
+
         # Publish
-        # The acl option is required since the current use case uses a cross account bucket 
+        # The acl option is required since the current use case uses a cross account bucket
         aws s3 cp --acl bucket-owner-full-control $TEST_RESULTS_PATH $test_result_target_path
