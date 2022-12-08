@@ -17,13 +17,6 @@ runs:
           exit 1
         fi
 
-        # Check if the test results file exist, skip if not
-        if [ ! -e "$TEST_RESULTS_PATH" ]; then
-          echo "Was not able to find $TEST_RESULTS_PATH"
-          echo "Skipping test result upload"
-          exit 0
-        fi
-
         # Grab variables from the github context (https://docs.github.com/en/actions/learn-github-actions/contexts#github-context)
         repository="${{github.repository}}"             # For example "Codertocat/Hello-World"
         repository_owner="${{github.repository_owner}}" # For example "Codertocat"
@@ -46,5 +39,12 @@ runs:
 
         # Publish
         # The acl option is required since the current use case uses a cross account bucket
-        aws s3 cp --acl bucket-owner-full-control $TEST_RESULTS_PATH $test_result_target_path
+        # Upload test results id the file exists
+        if [ -e "$TEST_RESULTS_PATH" ]; then
+          aws s3 cp --acl bucket-owner-full-control $TEST_RESULTS_PATH $test_result_target_path
+        else
+          echo "Was not able to find $TEST_RESULTS_PATH"
+          echo "Skipping test result upload"
+        fi
+
         aws s3 cp --acl bucket-owner-full-control buildInfo.json "${build_info_target_path}"

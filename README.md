@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Publish regulatory artifacts
-        uses: QActions/publish-regulatory-artifacts@1.1.0
+        uses: QActions/publish-regulatory-artifacts@1.2.0
         env:
           REGULATORY_S3_BUCKET: regulatory.extrahorizon.com
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
